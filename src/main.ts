@@ -69,6 +69,8 @@ function updateCamera(): void {
 	if (keys.ArrowDown) pitch += 0.01;
 	if (keys.ArrowLeft) yaw += 0.01;
 	if (keys.ArrowRight) yaw -= 0.01;
+	// if (keys.KeyA) roll += 0.01;
+	// if (keys.KeyD) roll -= 0.01;
 	if (keys.KeyW) speed += 0.0002;
 	if (keys.KeyS) speed -= 0.0002;
 
