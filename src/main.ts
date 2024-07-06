@@ -11,9 +11,9 @@ const scene = new THREE.Scene();
 const w = window.innerWidth;
 const h = window.innerHeight;
 
-const camera = new THREE.PerspectiveCamera(75, w / h, 0.1, 1000);
+const camera = new THREE.PerspectiveCamera(75, w / h, 0.1, 10000);
 camera.rotation.order = 'YXZ';
-camera.position.z = 5;
+camera.position.z = 30;
 
 const axesHelper = new THREE.AxesHelper(100);
 
@@ -34,7 +34,7 @@ earthGroup.rotation.z = (-23.5 * Math.PI) / 180;
 earthGroup.add(axesHelper);
 
 const textureLoader = new THREE.TextureLoader();
-const geometry = new THREE.IcosahedronGeometry(1, 12);
+const geometry = new THREE.IcosahedronGeometry(10, 12);
 const material = new THREE.MeshStandardMaterial({
 	map: textureLoader.load('src/assets/earthmap1k.jpg'),
 });
@@ -48,15 +48,34 @@ scene.add(starfield);
 const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444);
 scene.add(hemiLight);
 
-// Variables for plane steering
-let pitch = 0; // Rotation around X axis
-let yaw = 0; // Rotation around Y axis
-let roll = 0; // Rotation around Z axis
+interface AxisRotation {
+	clampedValue: ClampedValue;
+	axis: THREE.Vector3;
+}
+
+interface ClampedValue {
+	value: number;
+	step: number;
+	min: number;
+	max: number;
+}
+
+let pitch: AxisRotation = {
+	clampedValue: { value: 0, step: 0.0001, min: -0.005, max: 0.005 },
+	axis: new THREE.Vector3(1, 0, 0),
+};
+let yaw: AxisRotation = {
+	clampedValue: { value: 0, step: 0.0001, min: -0.005, max: 0.005 },
+	axis: new THREE.Vector3(0, 1, 0),
+};
+let roll: AxisRotation = {
+	clampedValue: { value: 0, step: 0.0001, min: -0.005, max: 0.005 },
+	axis: new THREE.Vector3(0, 0, 1),
+};
 // let speed = 0;
 const velocity = new THREE.Vector3(0, 0, 0);
 
-// Key state
-const keys: any = {
+const keys: { [key: string]: boolean } = {
 	ArrowUp: false,
 	ArrowDown: false,
 	ArrowLeft: false,
@@ -67,21 +86,29 @@ const keys: any = {
 	KeyS: false,
 };
 
-// Update camera based on the plane steering
+function clamp(value: number, min: number, max: number): number {
+	return Math.max(min, Math.min(max, value));
+}
+
+function rotateCamera(increase: boolean, reduce: boolean, { axis, clampedValue }: AxisRotation) {
+	if (increase && clampedValue.value < clampedValue.max) clampedValue.value += clampedValue.step;
+	if (reduce && clampedValue.value > clampedValue.min) clampedValue.value -= clampedValue.step;
+
+	camera.rotateOnAxis(axis, clampedValue.value);
+}
+
 function updateCamera(): void {
-	if (keys.ArrowUp) pitch -= 0.0001;
-	if (keys.ArrowDown) pitch += 0.0001;
-	if (keys.ArrowLeft) yaw += 0.0001;
-	if (keys.ArrowRight) yaw -= 0.0001;
-	if (keys.KeyA) roll += 0.0001;
-	if (keys.KeyD) roll -= 0.0001;
+	rotateCamera(keys.ArrowUp, keys.ArrowDown, pitch);
+	rotateCamera(keys.ArrowLeft, keys.ArrowRight, yaw);
+	rotateCamera(keys.KeyA, keys.KeyD, roll);
+
 	// if (keys.KeyW) speed += 0.0002;
 	// if (keys.KeyS) speed -= 0.0002;
 
 	// Update camera rotation
-	camera.rotateOnAxis(new THREE.Vector3(1, 0, 0), pitch);
-	camera.rotateOnAxis(new THREE.Vector3(0, 1, 0), yaw);
-	camera.rotateOnAxis(new THREE.Vector3(0, 0, 1), roll);
+	// camera.rotateOnAxis(new THREE.Vector3(1, 0, 0), pitch.clampedValue.value);
+	// camera.rotateOnAxis(new THREE.Vector3(0, 1, 0), yaw.value);
+	// camera.rotateOnAxis(new THREE.Vector3(0, 0, 1), roll.value);
 
 	// Move the camera forward in the direction it is facing
 	// const direction = new THREE.Vector3();
@@ -98,6 +125,7 @@ function updateCamera(): void {
 
 	// Update camera position
 	camera.position.add(velocity);
+	starfield.position.add(velocity);
 }
 
 // Event listeners for keydown and keyup
