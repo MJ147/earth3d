@@ -14,6 +14,8 @@ const h = window.innerHeight;
 const camera = new THREE.PerspectiveCamera(75, w / h, 0.1, 1000);
 camera.rotation.order = 'ZYX';
 camera.position.z = 5;
+const axesHelper = new THREE.AxesHelper(2);
+camera.add(axesHelper);
 
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(w, h);
@@ -46,10 +48,20 @@ const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444);
 scene.add(hemiLight);
 
 // Variables for plane steering
-let pitch = 0; // Rotation around X axis
-let yaw = 0; // Rotation around Y axis
-let roll = 0; // Rotation around Z axis
+let pitch = new THREE.Object3D();
+let yaw = new THREE.Object3D();
+let roll = new THREE.Object3D();
 let speed = 0;
+
+scene.add(roll);
+roll.add(yaw);
+yaw.add(pitch);
+pitch.add(camera);
+
+roll.position.set(0, 0, 0);
+yaw.rotation.set(0, 0, 0);
+pitch.rotation.set(0, 0, 0);
+camera.position.set(0, 0, 5); // Start camera at origin of pitch
 
 // Key state
 const keys: any = {
@@ -65,22 +77,24 @@ const keys: any = {
 
 // Update camera based on the plane steering
 function updateCamera(): void {
-	if (keys.ArrowUp) pitch -= 0.01;
-	if (keys.ArrowDown) pitch += 0.01;
-	if (keys.ArrowLeft) yaw += 0.01;
-	if (keys.ArrowRight) yaw -= 0.01;
-	// if (keys.KeyA) roll += 0.01;
-	// if (keys.KeyD) roll -= 0.01;
+	if (keys.ArrowUp) pitch.rotation.x -= 0.01;
+	if (keys.ArrowDown) pitch.rotation.x += 0.01;
+	if (keys.ArrowLeft) yaw.rotation.y += 0.01;
+	if (keys.ArrowRight) yaw.rotation.y -= 0.01;
+	if (keys.KeyA) roll.rotation.z += 0.01;
+	if (keys.KeyD) roll.rotation.z -= 0.01;
 	if (keys.KeyW) speed += 0.0002;
 	if (keys.KeyS) speed -= 0.0002;
-
-	// Update camera rotation
-	camera.rotation.set(pitch, yaw, roll);
 
 	// Move the camera forward in the direction it is facing
 	const direction = new THREE.Vector3();
 	camera.getWorldDirection(direction);
 	camera.position.addScaledVector(direction, speed);
+	roll.position.addScaledVector(direction, speed);
+	pitch.position.addScaledVector(direction, speed);
+	yaw.position.addScaledVector(direction, speed);
+
+	starfield.position.addScaledVector(direction, speed / 1.1);
 }
 
 // Event listeners for keydown and keyup
