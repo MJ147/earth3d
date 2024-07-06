@@ -1,42 +1,36 @@
 import * as THREE from 'three';
 
-export function getStarfield(numStars: number = 500) {
-	function randomSpherePoint() {
-		const radius = Math.random() * 25 + 100;
-		const u = Math.random();
-		const v = Math.random();
-		const theta = 2 * Math.PI * u;
-		const phi = Math.acos(2 * v - 1);
-		let x = radius * Math.sin(phi) * Math.cos(theta);
-		let y = radius * Math.sin(phi) * Math.sin(theta);
-		let z = radius * Math.cos(phi);
-
-		return {
-			pos: new THREE.Vector3(x, y, z),
-			hue: 0.6,
-			minDist: radius,
-		};
-	}
-	const verts = [];
-	const colors = [];
-	const positions = [];
-	let col;
-	for (let i = 0; i < numStars; i += 1) {
-		let p = randomSpherePoint();
-		const { pos, hue } = p;
-		positions.push(p);
-		col = new THREE.Color().setHSL(hue, 0.2, Math.random());
-		verts.push(pos.x, pos.y, pos.z);
-		colors.push(col.r, col.g, col.b);
-	}
-	const geo = new THREE.BufferGeometry();
-	geo.setAttribute('position', new THREE.Float32BufferAttribute(verts, 3));
-	geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
-	const mat = new THREE.PointsMaterial({
-		size: 0.5,
+export function getStarfield(starCount: number = 15000) {
+	const sphereRadius = 250; // Radius of the star sphere
+	const voidRadius = 230; // Radius of the empty space
+	const starGeometry = new THREE.BufferGeometry();
+	const starTexture = new THREE.TextureLoader().load('/src/assets/star.png');
+	const starMaterial = new THREE.PointsMaterial({
 		vertexColors: true,
-		map: new THREE.TextureLoader().load('/src/assets/circle.png'),
+		size: 0.5,
+		map: starTexture,
 	});
-	const points = new THREE.Points(geo, mat);
-	return points;
+
+	const starVertices = [];
+	const starColors = [];
+
+	for (let i = 0; i < starCount; i++) {
+		const x = THREE.MathUtils.randFloatSpread(sphereRadius * 2);
+		const y = THREE.MathUtils.randFloatSpread(sphereRadius * 2);
+		const z = THREE.MathUtils.randFloatSpread(sphereRadius * 2);
+
+		const distance = Math.sqrt(x * x + y * y + z * z);
+		if (distance > sphereRadius || distance < voidRadius) continue;
+
+		starVertices.push(x, y, z);
+		const greyValue = 0.8 + (Math.random() - 0.5) * 1;
+		starColors.push(greyValue, greyValue, greyValue);
+	}
+
+	starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starVertices, 3));
+	starGeometry.setAttribute('color', new THREE.Float32BufferAttribute(starColors, 3));
+
+	const stars = new THREE.Points(starGeometry, starMaterial);
+
+	return stars;
 }

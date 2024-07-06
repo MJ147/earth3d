@@ -98,7 +98,7 @@ function rotateCamera(increase: boolean, reduce: boolean, { axis, clampedValue }
 }
 
 function updateCamera(): void {
-	rotateCamera(keys.ArrowUp, keys.ArrowDown, pitch);
+	rotateCamera(keys.ArrowDown, keys.ArrowUp, pitch);
 	rotateCamera(keys.ArrowLeft, keys.ArrowRight, yaw);
 	rotateCamera(keys.KeyA, keys.KeyD, roll);
 
