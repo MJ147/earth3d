@@ -52,7 +52,8 @@ scene.add(hemiLight);
 let pitch = 0; // Rotation around X axis
 let yaw = 0; // Rotation around Y axis
 let roll = 0; // Rotation around Z axis
-let speed = 0;
+// let speed = 0;
+const velocity = new THREE.Vector3(0, 0, 0);
 
 // Key state
 const keys: any = {
@@ -74,8 +75,8 @@ function updateCamera(): void {
 	if (keys.ArrowRight) yaw -= 0.0001;
 	if (keys.KeyA) roll += 0.0001;
 	if (keys.KeyD) roll -= 0.0001;
-	if (keys.KeyW) speed += 0.0002;
-	if (keys.KeyS) speed -= 0.0002;
+	// if (keys.KeyW) speed += 0.0002;
+	// if (keys.KeyS) speed -= 0.0002;
 
 	// Update camera rotation
 	camera.rotateOnAxis(new THREE.Vector3(1, 0, 0), pitch);
@@ -83,10 +84,20 @@ function updateCamera(): void {
 	camera.rotateOnAxis(new THREE.Vector3(0, 0, 1), roll);
 
 	// Move the camera forward in the direction it is facing
+	// const direction = new THREE.Vector3();
+	// camera.getWorldDirection(direction);
+	// camera.position.addScaledVector(direction, speed);
+	// starfield.position.addScaledVector(direction, speed / 1.1);
+	// / Add velocity based on key presses
 	const direction = new THREE.Vector3();
 	camera.getWorldDirection(direction);
-	camera.position.addScaledVector(direction, speed);
-	starfield.position.addScaledVector(direction, speed / 1.1);
+	direction.normalize();
+
+	if (keys.KeyW) velocity.add(direction.clone().multiplyScalar(0.001));
+	if (keys.KeyS) velocity.add(direction.clone().multiplyScalar(-0.001));
+
+	// Update camera position
+	camera.position.add(velocity);
 }
 
 // Event listeners for keydown and keyup
