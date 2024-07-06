@@ -12,10 +12,10 @@ const w = window.innerWidth;
 const h = window.innerHeight;
 
 const camera = new THREE.PerspectiveCamera(75, w / h, 0.1, 1000);
-camera.rotation.order = 'ZYX';
+camera.rotation.order = 'YXZ';
 camera.position.z = 5;
-const axesHelper = new THREE.AxesHelper(2);
-camera.add(axesHelper);
+
+const axesHelper = new THREE.AxesHelper(100);
 
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(w, h);
@@ -31,6 +31,7 @@ const controls = new OrbitControls(camera, renderer.domElement);
 
 const earthGroup = new THREE.Group();
 earthGroup.rotation.z = (-23.5 * Math.PI) / 180;
+earthGroup.add(axesHelper);
 
 const textureLoader = new THREE.TextureLoader();
 const geometry = new THREE.IcosahedronGeometry(1, 12);
@@ -67,17 +68,19 @@ const keys: any = {
 
 // Update camera based on the plane steering
 function updateCamera(): void {
-	if (keys.ArrowUp) pitch -= 0.01;
-	if (keys.ArrowDown) pitch += 0.01;
-	if (keys.ArrowLeft) yaw += 0.01;
-	if (keys.ArrowRight) yaw -= 0.01;
-	// if (keys.KeyA) roll += 0.01;
-	// if (keys.KeyD) roll -= 0.01;
+	if (keys.ArrowUp) pitch -= 0.0001;
+	if (keys.ArrowDown) pitch += 0.0001;
+	if (keys.ArrowLeft) yaw += 0.0001;
+	if (keys.ArrowRight) yaw -= 0.0001;
+	if (keys.KeyA) roll += 0.0001;
+	if (keys.KeyD) roll -= 0.0001;
 	if (keys.KeyW) speed += 0.0002;
 	if (keys.KeyS) speed -= 0.0002;
 
 	// Update camera rotation
-	camera.rotation.set(pitch, yaw, roll);
+	camera.rotateOnAxis(new THREE.Vector3(1, 0, 0), pitch);
+	camera.rotateOnAxis(new THREE.Vector3(0, 1, 0), yaw);
+	camera.rotateOnAxis(new THREE.Vector3(0, 0, 1), roll);
 
 	// Move the camera forward in the direction it is facing
 	const direction = new THREE.Vector3();
