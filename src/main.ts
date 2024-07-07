@@ -3,6 +3,18 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { getStarfield } from './starfield/starfield.ts';
 
+interface ClampedValue {
+	value: number;
+	step: number;
+	min: number;
+	max: number;
+}
+
+interface AxisRotation {
+	clampedValue: ClampedValue;
+	axis: THREE.Vector3;
+}
+
 window.addEventListener('keydown', handleKeyDown);
 window.addEventListener('keyup', handleKeyUp);
 
@@ -11,9 +23,11 @@ const scene = new THREE.Scene();
 const w = window.innerWidth;
 const h = window.innerHeight;
 
-const camera = new THREE.PerspectiveCamera(75, w / h, 0.1, 10000);
+const camera = new THREE.PerspectiveCamera(40, w / h, 0.1, 10000);
 camera.rotation.order = 'YXZ';
-camera.position.z = 30;
+camera.position.z = 50;
+camera.layers.enable(1);
+camera.layers.enable(2);
 
 const axesHelper = new THREE.AxesHelper(100);
 
@@ -27,38 +41,54 @@ window.addEventListener('resize', () => {
 	renderer.setSize(w, h);
 });
 
-const controls = new OrbitControls(camera, renderer.domElement);
+new OrbitControls(camera, renderer.domElement);
 
 const earthGroup = new THREE.Group();
 earthGroup.rotation.z = (-23.5 * Math.PI) / 180;
 earthGroup.add(axesHelper);
 
 const textureLoader = new THREE.TextureLoader();
-const geometry = new THREE.IcosahedronGeometry(10, 12);
+const geometry = new THREE.SphereGeometry(10, 12);
 const material = new THREE.MeshStandardMaterial({
-	map: textureLoader.load('src/assets/earthmap1k.jpg'),
+	map: textureLoader.load('src/assets/8k_earth_daymap.jpg'),
 });
+const dayTexture = textureLoader.load('psrc/assets/8k_earth_daymap.jpg');
+const nightTexture = textureLoader.load('src/assets/8k_earth_nightmap.jpg');
+
 const earthMesh = new THREE.Mesh(geometry, material);
+earthMesh.layers.set(1);
 earthGroup.add(earthMesh);
 scene.add(earthGroup);
 
 const starfield = getStarfield();
 scene.add(starfield);
 
-const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444);
-scene.add(hemiLight);
+const sunlight = new THREE.DirectionalLight(0xffffff, 1);
+sunlight.position.set(-2, 0.5, 1.5);
+sunlight.layers.set(1);
+scene.add(sunlight);
 
-interface AxisRotation {
-	clampedValue: ClampedValue;
-	axis: THREE.Vector3;
-}
+const darklight = new THREE.DirectionalLight(0xffffff, 1);
+darklight.position.set(2, -0.5, -1.5);
+darklight.layers.set(2);
+scene.add(darklight);
 
-interface ClampedValue {
-	value: number;
-	step: number;
-	min: number;
-	max: number;
-}
+// const darkSideMat = new THREE.MeshBasicMaterial({
+// 	map: textureLoader.load('src/assets/8k_earth_nightmap.jpg'),
+// 	blending: THREE.AdditiveBlending,
+// });
+
+const darkSideMat = new THREE.MeshLambertMaterial({
+	transparent: true,
+	alphaMap: textureLoader.load('src/assets/8k_earth_nightmap.jpg'),
+	color: new THREE.Color(163, 169, 133),
+	depthTest: false, // So it doesn't z-fight the main Earth sphere
+	blending: THREE.AdditiveBlending, // Lights are additive
+});
+
+const darkSideMesh = new THREE.Mesh(geometry, darkSideMat);
+darkSideMesh.layers.set(2);
+earthGroup.add(darkSideMesh);
 
 let pitch: AxisRotation = {
 	clampedValue: { value: 0, step: 0.0001, min: -0.005, max: 0.005 },
@@ -84,11 +114,9 @@ const keys: { [key: string]: boolean } = {
 	KeyD: false,
 	KeyW: false,
 	KeyS: false,
+	KeyQ: false,
+	KeyE: false,
 };
-
-function clamp(value: number, min: number, max: number): number {
-	return Math.max(min, Math.min(max, value));
-}
 
 function rotateCamera(increase: boolean, reduce: boolean, { axis, clampedValue }: AxisRotation) {
 	if (increase && clampedValue.value < clampedValue.max) clampedValue.value += clampedValue.step;
@@ -100,7 +128,7 @@ function rotateCamera(increase: boolean, reduce: boolean, { axis, clampedValue }
 function updateCamera(): void {
 	rotateCamera(keys.ArrowDown, keys.ArrowUp, pitch);
 	rotateCamera(keys.ArrowLeft, keys.ArrowRight, yaw);
-	rotateCamera(keys.KeyA, keys.KeyD, roll);
+	rotateCamera(keys.KeyQ, keys.KeyE, roll);
 
 	// if (keys.KeyW) speed += 0.0002;
 	// if (keys.KeyS) speed -= 0.0002;
@@ -123,6 +151,20 @@ function updateCamera(): void {
 	if (keys.KeyW) velocity.add(direction.clone().multiplyScalar(0.001));
 	if (keys.KeyS) velocity.add(direction.clone().multiplyScalar(-0.001));
 
+	// const strafeDirection = new THREE.Vector3();
+	// camera.getWorldDirection(strafeDirection);
+	// strafeDirection.cross(camera.up);
+	// strafeDirection.normalize();
+
+	// if (keys.KeyA) camera.position.add(strafeDirection.multiplyScalar(-0.001));
+	// if (keys.KeyD) camera.position.add(strafeDirection.multiplyScalar(0.001));
+	// Strafe the camera left or right
+	const strafeDirection = new THREE.Vector3();
+	strafeDirection.crossVectors(camera.up, direction).normalize();
+
+	if (keys.KeyA) velocity.add(strafeDirection.clone().multiplyScalar(0.001));
+	if (keys.KeyD) velocity.add(strafeDirection.clone().multiplyScalar(-0.001));
+
 	// Update camera position
 	camera.position.add(velocity);
 	starfield.position.add(velocity);
@@ -144,7 +186,8 @@ function handleKeyUp(event: any) {
 function animate() {
 	requestAnimationFrame(animate);
 	updateCamera();
-	earthMesh.rotation.y += 0.001;
+	earthMesh.rotation.y += 0.0005;
+	darkSideMesh.rotation.y += 0.0005;
 
 	renderer.render(scene, camera);
 }
