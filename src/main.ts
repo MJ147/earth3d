@@ -10,11 +10,6 @@ interface ClampedValue {
 	max: number;
 }
 
-interface AxisRotation {
-	clampedValue: ClampedValue;
-	axis: THREE.Vector3;
-}
-
 window.addEventListener('keydown', handleKeyDown);
 window.addEventListener('keyup', handleKeyUp);
 
@@ -26,8 +21,6 @@ const h = window.innerHeight;
 const camera = new THREE.PerspectiveCamera(40, w / h, 0.1, 10000);
 camera.rotation.order = 'YXZ';
 camera.position.z = 50;
-camera.layers.enable(1);
-camera.layers.enable(2);
 
 const axesHelper = new THREE.AxesHelper(100);
 
@@ -48,15 +41,11 @@ earthGroup.rotation.z = (-23.5 * Math.PI) / 180;
 earthGroup.add(axesHelper);
 
 const textureLoader = new THREE.TextureLoader();
-const geometry = new THREE.SphereGeometry(10, 12);
+const geometry = new THREE.IcosahedronGeometry(10, 12);
 const material = new THREE.MeshStandardMaterial({
 	map: textureLoader.load('src/assets/8k_earth_daymap.jpg'),
 });
-const dayTexture = textureLoader.load('psrc/assets/8k_earth_daymap.jpg');
-const nightTexture = textureLoader.load('src/assets/8k_earth_nightmap.jpg');
-
 const earthMesh = new THREE.Mesh(geometry, material);
-earthMesh.layers.set(1);
 earthGroup.add(earthMesh);
 scene.add(earthGroup);
 
@@ -65,30 +54,23 @@ scene.add(starfield);
 
 const sunlight = new THREE.DirectionalLight(0xffffff, 1);
 sunlight.position.set(-2, 0.5, 1.5);
-sunlight.layers.set(1);
 scene.add(sunlight);
 
-const darklight = new THREE.DirectionalLight(0xffffff, 1);
-darklight.position.set(2, -0.5, -1.5);
-darklight.layers.set(2);
-scene.add(darklight);
+interface AxisRotation {
+	clampedValue: ClampedValue;
+	axis: THREE.Vector3;
+}
 
-// const darkSideMat = new THREE.MeshBasicMaterial({
-// 	map: textureLoader.load('src/assets/8k_earth_nightmap.jpg'),
-// 	blending: THREE.AdditiveBlending,
-// });
-
-const darkSideMat = new THREE.MeshLambertMaterial({
+const lightMat = new THREE.MeshBasicMaterial({
+	map: textureLoader.load('src/assets/8k_earth_nightmap.jpg'),
+	blending: THREE.AdditiveBlending,
 	transparent: true,
-	alphaMap: textureLoader.load('src/assets/8k_earth_nightmap.jpg'),
-	color: new THREE.Color(163, 169, 133),
-	depthTest: false, // So it doesn't z-fight the main Earth sphere
-	blending: THREE.AdditiveBlending, // Lights are additive
+	opacity: 0.2,
 });
 
-const darkSideMesh = new THREE.Mesh(geometry, darkSideMat);
-darkSideMesh.layers.set(2);
-earthGroup.add(darkSideMesh);
+const lightMesh = new THREE.Mesh(geometry, lightMat);
+
+earthGroup.add(lightMesh);
 
 let pitch: AxisRotation = {
 	clampedValue: { value: 0, step: 0.0001, min: -0.005, max: 0.005 },
@@ -187,7 +169,7 @@ function animate() {
 	requestAnimationFrame(animate);
 	updateCamera();
 	earthMesh.rotation.y += 0.0005;
-	darkSideMesh.rotation.y += 0.0005;
+	lightMesh.rotation.y += 0.0005;
 
 	renderer.render(scene, camera);
 }
