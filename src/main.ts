@@ -10,6 +10,32 @@ interface ClampedValue {
 	max: number;
 }
 
+interface AxisRotation {
+	clampedValue: ClampedValue;
+	axis: THREE.Vector3;
+}
+
+interface SteeringKeys {
+	ArrowUp: boolean; // move forward
+	ArrowDown: boolean; // move backward
+	ArrowLeft: boolean; // rotate left
+	ArrowRight: boolean; // rotate right
+	KeyA: boolean; // move left
+	KeyD: boolean; // move right
+	KeyW: boolean; // move up
+	KeyS: boolean; // move down
+	KeyQ: boolean; // roll left
+	KeyE: boolean; // roll right
+	KeyR: boolean; // roll forward
+	KeyF: boolean; // roll backward
+}
+
+const earthRotationStep: number = 0.0001;
+
+const textureLoader = new THREE.TextureLoader();
+const earthDayTexture = textureLoader.load('src/assets/8k_earth_daymap.jpg');
+const earthNightTexture = textureLoader.load('src/assets/8k_earth_nightmap.jpg');
+
 window.addEventListener('keydown', handleKeyDown);
 window.addEventListener('keyup', handleKeyUp);
 
@@ -21,8 +47,6 @@ const h = window.innerHeight;
 const camera = new THREE.PerspectiveCamera(40, w / h, 0.1, 10000);
 camera.rotation.order = 'YXZ';
 camera.position.z = 50;
-
-const axesHelper = new THREE.AxesHelper(100);
 
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(w, h);
@@ -38,12 +62,10 @@ new OrbitControls(camera, renderer.domElement);
 
 const earthGroup = new THREE.Group();
 earthGroup.rotation.z = (-23.5 * Math.PI) / 180;
-earthGroup.add(axesHelper);
 
-const textureLoader = new THREE.TextureLoader();
 const geometry = new THREE.IcosahedronGeometry(10, 12);
 const material = new THREE.MeshStandardMaterial({
-	map: textureLoader.load('src/assets/8k_earth_daymap.jpg'),
+	map: earthDayTexture,
 });
 const earthMesh = new THREE.Mesh(geometry, material);
 earthGroup.add(earthMesh);
@@ -56,13 +78,8 @@ const sunlight = new THREE.DirectionalLight(0xffffff, 1);
 sunlight.position.set(-2, 0.5, 1.5);
 scene.add(sunlight);
 
-interface AxisRotation {
-	clampedValue: ClampedValue;
-	axis: THREE.Vector3;
-}
-
 const lightMat = new THREE.MeshBasicMaterial({
-	map: textureLoader.load('src/assets/8k_earth_nightmap.jpg'),
+	map: earthNightTexture,
 	blending: THREE.AdditiveBlending,
 	transparent: true,
 	opacity: 0.2,
@@ -73,21 +90,21 @@ const lightMesh = new THREE.Mesh(geometry, lightMat);
 earthGroup.add(lightMesh);
 
 let pitch: AxisRotation = {
-	clampedValue: { value: 0, step: 0.0001, min: -0.005, max: 0.005 },
+	clampedValue: { value: 0, step: 0.00005, min: -0.003, max: 0.003 },
 	axis: new THREE.Vector3(1, 0, 0),
 };
 let yaw: AxisRotation = {
-	clampedValue: { value: 0, step: 0.0001, min: -0.005, max: 0.005 },
+	clampedValue: { value: 0, step: 0.00005, min: -0.003, max: 0.003 },
 	axis: new THREE.Vector3(0, 1, 0),
 };
 let roll: AxisRotation = {
-	clampedValue: { value: 0, step: 0.0001, min: -0.005, max: 0.005 },
+	clampedValue: { value: 0, step: 0.00005, min: -0.003, max: 0.003 },
 	axis: new THREE.Vector3(0, 0, 1),
 };
 // let speed = 0;
 const velocity = new THREE.Vector3(0, 0, 0);
 
-const keys: { [key: string]: boolean } = {
+const keys: SteeringKeys = {
 	ArrowUp: false,
 	ArrowDown: false,
 	ArrowLeft: false,
@@ -98,6 +115,8 @@ const keys: { [key: string]: boolean } = {
 	KeyS: false,
 	KeyQ: false,
 	KeyE: false,
+	KeyR: false,
+	KeyF: false,
 };
 
 function rotateCamera(increase: boolean, reduce: boolean, { axis, clampedValue }: AxisRotation) {
@@ -108,7 +127,7 @@ function rotateCamera(increase: boolean, reduce: boolean, { axis, clampedValue }
 }
 
 function updateCamera(): void {
-	rotateCamera(keys.ArrowDown, keys.ArrowUp, pitch);
+	rotateCamera(keys.KeyR, keys.KeyF, pitch);
 	rotateCamera(keys.ArrowLeft, keys.ArrowRight, yaw);
 	rotateCamera(keys.KeyQ, keys.KeyE, roll);
 
@@ -126,12 +145,12 @@ function updateCamera(): void {
 	// camera.position.addScaledVector(direction, speed);
 	// starfield.position.addScaledVector(direction, speed / 1.1);
 	// / Add velocity based on key presses
-	const direction = new THREE.Vector3();
-	camera.getWorldDirection(direction);
-	direction.normalize();
+	const zDirection = new THREE.Vector3();
+	camera.getWorldDirection(zDirection);
+	zDirection.normalize();
 
-	if (keys.KeyW) velocity.add(direction.clone().multiplyScalar(0.001));
-	if (keys.KeyS) velocity.add(direction.clone().multiplyScalar(-0.001));
+	if (keys.ArrowUp) velocity.add(zDirection.clone().multiplyScalar(0.0001));
+	if (keys.ArrowDown) velocity.add(zDirection.clone().multiplyScalar(-0.0001));
 
 	// const strafeDirection = new THREE.Vector3();
 	// camera.getWorldDirection(strafeDirection);
@@ -141,11 +160,17 @@ function updateCamera(): void {
 	// if (keys.KeyA) camera.position.add(strafeDirection.multiplyScalar(-0.001));
 	// if (keys.KeyD) camera.position.add(strafeDirection.multiplyScalar(0.001));
 	// Strafe the camera left or right
-	const strafeDirection = new THREE.Vector3();
-	strafeDirection.crossVectors(camera.up, direction).normalize();
+	const xDirection = new THREE.Vector3(zDirection.z, zDirection.x, zDirection.y);
 
-	if (keys.KeyA) velocity.add(strafeDirection.clone().multiplyScalar(0.001));
-	if (keys.KeyD) velocity.add(strafeDirection.clone().multiplyScalar(-0.001));
+	if (keys.KeyA) velocity.add(xDirection.clone().multiplyScalar(0.0001));
+	if (keys.KeyD) velocity.add(xDirection.clone().multiplyScalar(-0.0001));
+
+	// const yDirection = new THREE.Vector3(0, 1, 0);
+	// camera.getWorldDirection(xDirection);
+	// xDirection.crossVectors(camera.up, zDirection).normalize();
+
+	// if (keys.KeyW) velocity.add(yDirection.clone().multiplyScalar(0.0001));
+	// if (keys.KeyS) velocity.add(yDirection.clone().multiplyScalar(-0.0001));
 
 	// Update camera position
 	camera.position.add(velocity);
@@ -153,23 +178,23 @@ function updateCamera(): void {
 }
 
 // Event listeners for keydown and keyup
-function handleKeyDown(event: any) {
+function handleKeyDown(event: KeyboardEvent) {
 	if (keys.hasOwnProperty(event.code)) {
-		keys[event.code] = true;
+		keys[event.code as keyof SteeringKeys] = true;
 	}
 }
 
 function handleKeyUp(event: any) {
 	if (keys.hasOwnProperty(event.code)) {
-		keys[event.code] = false;
+		keys[event.code as keyof SteeringKeys] = false;
 	}
 }
 
 function animate() {
 	requestAnimationFrame(animate);
 	updateCamera();
-	earthMesh.rotation.y += 0.0005;
-	lightMesh.rotation.y += 0.0005;
+	earthMesh.rotation.y += earthRotationStep;
+	lightMesh.rotation.y += earthRotationStep;
 
 	renderer.render(scene, camera);
 }
