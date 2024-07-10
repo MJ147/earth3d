@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 
 export function getStarfield(starCount: number = 15000) {
-	const sphereRadius = 200; // Radius of the star sphere
-	const voidRadius = 150; // Radius of the empty space
+	const sphereRadius = 150; // Radius of the star sphere
+	const voidRadius = 120; // Radius of the empty space
 	const starGeometry = new THREE.BufferGeometry();
 	const starTexture = new THREE.TextureLoader().load('/src/assets/star.png');
 	const starMaterial = new THREE.PointsMaterial({

@@ -147,7 +147,9 @@ function updateCamera(): void {
 	// / Add velocity based on key presses
 	const zDirection = new THREE.Vector3();
 	camera.getWorldDirection(zDirection);
-	zDirection.normalize();
+	// console.log(zDirection);
+
+	// zDirection.normalize();
 
 	if (keys.ArrowUp) velocity.add(zDirection.clone().multiplyScalar(0.0001));
 	if (keys.ArrowDown) velocity.add(zDirection.clone().multiplyScalar(-0.0001));
@@ -160,17 +162,17 @@ function updateCamera(): void {
 	// if (keys.KeyA) camera.position.add(strafeDirection.multiplyScalar(-0.001));
 	// if (keys.KeyD) camera.position.add(strafeDirection.multiplyScalar(0.001));
 	// Strafe the camera left or right
-	const xDirection = new THREE.Vector3(zDirection.z, zDirection.x, zDirection.y);
+	let xDirection = new THREE.Vector3();
+	xDirection.setFromMatrixColumn(camera.matrixWorld, 0);
 
-	if (keys.KeyA) velocity.add(xDirection.clone().multiplyScalar(0.0001));
-	if (keys.KeyD) velocity.add(xDirection.clone().multiplyScalar(-0.0001));
+	if (keys.KeyA) velocity.add(xDirection.clone().multiplyScalar(-0.0001));
+	if (keys.KeyD) velocity.add(xDirection.clone().multiplyScalar(+0.0001));
 
-	// const yDirection = new THREE.Vector3(0, 1, 0);
-	// camera.getWorldDirection(xDirection);
-	// xDirection.crossVectors(camera.up, zDirection).normalize();
+	const yDirection = new THREE.Vector3();
+	yDirection.setFromMatrixColumn(camera.matrixWorld, 1);
 
-	// if (keys.KeyW) velocity.add(yDirection.clone().multiplyScalar(0.0001));
-	// if (keys.KeyS) velocity.add(yDirection.clone().multiplyScalar(-0.0001));
+	if (keys.KeyW) velocity.add(yDirection.clone().multiplyScalar(0.0001));
+	if (keys.KeyS) velocity.add(yDirection.clone().multiplyScalar(-0.0001));
 
 	// Update camera position
 	camera.position.add(velocity);
