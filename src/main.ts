@@ -1,6 +1,5 @@
 import './style.css';
 import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { getStarfield } from './starfield/starfield.ts';
 
 interface ClampedValue {
@@ -33,8 +32,8 @@ interface SteeringKeys {
 const earthRotationStep: number = 0.0001;
 
 const textureLoader = new THREE.TextureLoader();
-const earthDayTexture = textureLoader.load('src/assets/8k_earth_daymap.jpg');
-const earthNightTexture = textureLoader.load('src/assets/8k_earth_nightmap.jpg');
+const earthDayTexture = textureLoader.load('assets/8k_earth_daymap.jpg');
+const earthNightTexture = textureLoader.load('assets/8k_earth_nightmap.jpg');
 
 window.addEventListener('keydown', handleKeyDown);
 window.addEventListener('keyup', handleKeyUp);
@@ -57,8 +56,6 @@ window.addEventListener('resize', () => {
 	camera.updateProjectionMatrix();
 	renderer.setSize(w, h);
 });
-
-new OrbitControls(camera, renderer.domElement);
 
 const earthGroup = new THREE.Group();
 earthGroup.rotation.z = (-23.5 * Math.PI) / 180;
