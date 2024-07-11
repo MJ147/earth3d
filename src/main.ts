@@ -8,6 +8,7 @@ const earthRotationStep: number = 0.0001;
 const textureLoader = new THREE.TextureLoader();
 const earthDayTexture = textureLoader.load('assets/8k_earth_daymap.jpg');
 const earthNightTexture = textureLoader.load('assets/8k_earth_nightmap.jpg');
+const earthCloudsTexture = textureLoader.load('assets/8k_earth_clouds.jpg');
 
 const scene = new THREE.Scene();
 
@@ -32,12 +33,19 @@ const earthGroup = new THREE.Group();
 earthGroup.rotation.z = (-23.5 * Math.PI) / 180;
 
 const geometry = new THREE.IcosahedronGeometry(10, 12);
-const material = new THREE.MeshStandardMaterial({
-	map: earthDayTexture,
-});
+const material = new THREE.MeshStandardMaterial({ map: earthDayTexture });
 const earthMesh = new THREE.Mesh(geometry, material);
 earthGroup.add(earthMesh);
 scene.add(earthGroup);
+
+const cloudMaterial = new THREE.MeshStandardMaterial({
+	map: earthCloudsTexture,
+	transparent: true,
+	blending: THREE.AdditiveBlending,
+});
+const cloudMesh = new THREE.Mesh(geometry, cloudMaterial);
+cloudMesh.scale.setScalar(1.003);
+earthGroup.add(cloudMesh);
 
 const starfield = new Starfield();
 scene.add(starfield.getStars());
@@ -49,10 +57,9 @@ scene.add(sunlight);
 const lightMat = new THREE.MeshBasicMaterial({
 	map: earthNightTexture,
 	blending: THREE.AdditiveBlending,
-	transparent: true,
-	opacity: 0.2,
+	transparent: false,
+	opacity: 0.1,
 });
-
 const lightMesh = new THREE.Mesh(geometry, lightMat);
 
 earthGroup.add(lightMesh);
@@ -64,6 +71,7 @@ function animate() {
 	spaceShipControls.updateCamera();
 	earthMesh.rotation.y += earthRotationStep;
 	lightMesh.rotation.y += earthRotationStep;
+	cloudMesh.rotation.y += earthRotationStep + 0.00002;
 
 	renderer.render(scene, camera);
 }

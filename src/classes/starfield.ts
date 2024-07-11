@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { Star } from '../interfaces/star';
+import { Optional } from '../interfaces/option';
 
 export class Starfield {
 	private starCount: number;
@@ -41,7 +42,7 @@ export class Starfield {
 		return stars;
 	}
 
-	createRandomStar(): Star | null {
+	createRandomStar(): Optional<Star> {
 		const x = THREE.MathUtils.randFloatSpread(this.sphereRadius * 2);
 		const y = THREE.MathUtils.randFloatSpread(this.sphereRadius * 2);
 		const z = THREE.MathUtils.randFloatSpread(this.sphereRadius * 2);
