@@ -1,7 +1,7 @@
 import './style.css';
 import * as THREE from 'three';
-import { getStarfield } from './starfield.ts';
-import { SpaceshipControls } from './spaceshipControls.ts';
+import { getStarfield } from './functions/starfield.ts';
+import { SpaceshipControls } from './classes/spaceship-controls.ts';
 
 const earthRotationStep: number = 0.0001;
 
