@@ -63,8 +63,8 @@ export class SpaceshipControls {
 	constructor(camera: THREE.PerspectiveCamera, starfield: THREE.Points) {
 		this.starfield = starfield;
 		this.camera = camera;
-		window.addEventListener('keydown', this.handleKeyDown);
-		window.addEventListener('keyup', this.handleKeyUp);
+		window.addEventListener('keydown', (event: KeyboardEvent): void => this.handleKeyDown(event));
+		window.addEventListener('keyup', (event: KeyboardEvent): void => this.handleKeyUp(event));
 	}
 
 	rotateCamera(increase: boolean, reduce: boolean, { axis, clampedValue }: AxisRotation) {
@@ -109,13 +109,15 @@ export class SpaceshipControls {
 		this.starfield.position.add(this.velocity);
 	}
 
-	handleKeyDown(event: KeyboardEvent) {
+	handleKeyDown(event: KeyboardEvent): void {
+		console.log(this.keys);
+
 		if (this.keys.hasOwnProperty(event.code)) {
 			this.keys[event.code as keyof SteeringKeys] = true;
 		}
 	}
 
-	handleKeyUp(event: any) {
+	handleKeyUp(event: any): void {
 		if (this.keys.hasOwnProperty(event.code)) {
 			this.keys[event.code as keyof SteeringKeys] = false;
 		}
