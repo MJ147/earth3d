@@ -3,28 +3,28 @@ import { AxisRotation } from '../interfaces/axis-rotation';
 import { SteeringKey, SteeringKeys } from '../interfaces/steering-keys';
 
 export class SpaceshipControls {
-	readonly ROTATION_STEP: number = 0.00005;
-	readonly ROTATION_LIMIT: number = 0.003;
-	readonly ACCELERATION_STEP: number = 0.0001;
+	private readonly ROTATION_STEP: number = 0.00005;
+	private readonly ROTATION_LIMIT: number = 0.003;
+	private readonly ACCELERATION_STEP: number = 0.0001;
 
-	camera: THREE.PerspectiveCamera;
-	velocity = new THREE.Vector3(0, 0, 0);
-	starfield: THREE.Points;
+	private camera: THREE.PerspectiveCamera;
+	private velocity = new THREE.Vector3(0, 0, 0);
+	private starfield: THREE.Points;
 
-	pitch: AxisRotation = {
+	private pitch: AxisRotation = {
 		value: 0,
 		axis: new THREE.Vector3(1, 0, 0),
 	};
-	yaw: AxisRotation = {
+	private yaw: AxisRotation = {
 		value: 0,
 		axis: new THREE.Vector3(0, 1, 0),
 	};
-	roll: AxisRotation = {
+	private roll: AxisRotation = {
 		value: 0,
 		axis: new THREE.Vector3(0, 0, 1),
 	};
 
-	keys: SteeringKeys = {
+	private keys: SteeringKeys = {
 		ArrowUp: false,
 		ArrowDown: false,
 		ArrowLeft: false,
@@ -65,31 +65,31 @@ export class SpaceshipControls {
 		this.starfield.position.add(this.velocity);
 	}
 
-	rotateCamera(increase: boolean, reduce: boolean, rotation: AxisRotation) {
+	private rotateCamera(increase: boolean, reduce: boolean, rotation: AxisRotation) {
 		if (increase && rotation.value < this.ROTATION_LIMIT) rotation.value += this.ROTATION_STEP;
 		if (reduce && rotation.value > -this.ROTATION_LIMIT) rotation.value -= this.ROTATION_STEP;
 
 		this.camera.rotateOnAxis(rotation.axis, rotation.value);
 	}
 
-	handleDirectionMovement(direction: THREE.Vector3, increase: boolean, reduce: boolean): void {
+	private handleDirectionMovement(direction: THREE.Vector3, increase: boolean, reduce: boolean): void {
 		this.addDirectionVelocity(direction, this.ACCELERATION_STEP, increase);
 		this.addDirectionVelocity(direction, -this.ACCELERATION_STEP, reduce);
 	}
 
-	addDirectionVelocity(direction: THREE.Vector3, scalar: number, keyCondition: boolean): void {
+	private addDirectionVelocity(direction: THREE.Vector3, scalar: number, keyCondition: boolean): void {
 		if (!keyCondition) return;
 
 		this.velocity.add(direction.clone().multiplyScalar(scalar));
 	}
 
-	handleKeyDown(event: KeyboardEvent): void {
+	private handleKeyDown(event: KeyboardEvent): void {
 		if (!this.keys.hasOwnProperty(event.code)) return;
 
 		this.keys[event.code as SteeringKey] = true;
 	}
 
-	handleKeyUp(event: any): void {
+	private handleKeyUp(event: any): void {
 		if (!this.keys.hasOwnProperty(event.code)) return;
 
 		this.keys[event.code as SteeringKey] = false;

@@ -1,7 +1,7 @@
 import './style.css';
 import * as THREE from 'three';
-import { getStarfield } from './functions/starfield.ts';
 import { SpaceshipControls } from './classes/spaceship-controls.ts';
+import { Starfield } from './classes/starfield.ts';
 
 const earthRotationStep: number = 0.0001;
 
@@ -39,8 +39,8 @@ const earthMesh = new THREE.Mesh(geometry, material);
 earthGroup.add(earthMesh);
 scene.add(earthGroup);
 
-const starfield = getStarfield();
-scene.add(starfield);
+const starfield = new Starfield();
+scene.add(starfield.getStars());
 
 const sunlight = new THREE.DirectionalLight(0xffffff, 1);
 sunlight.position.set(-2, 0.5, 1.5);
@@ -57,7 +57,7 @@ const lightMesh = new THREE.Mesh(geometry, lightMat);
 
 earthGroup.add(lightMesh);
 
-const spaceShipControls = new SpaceshipControls(camera, starfield);
+const spaceShipControls = new SpaceshipControls(camera, starfield.getStars());
 
 function animate() {
 	requestAnimationFrame(animate);
