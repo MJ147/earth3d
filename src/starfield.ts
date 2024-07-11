@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-export function getStarfield(starCount: number = 15000) {
+export function getStarfield(starCount: number = 15000): THREE.Points {
 	const sphereRadius = 150; // Radius of the star sphere
 	const voidRadius = 120; // Radius of the empty space
 	const starGeometry = new THREE.BufferGeometry();
