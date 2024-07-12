@@ -2,7 +2,6 @@ import './style.css';
 import * as THREE from 'three';
 import { SpaceshipControls } from './classes/spaceship-controls.ts';
 import { Starfield } from './classes/starfield.ts';
-// import { getFresnelMat } from './classes/frestel.ts';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
@@ -67,10 +66,6 @@ const lightMesh = new THREE.Mesh(geometry, lightMat);
 lightMesh.scale.setScalar(1.003);
 
 earthGroup.add(lightMesh);
-// const fresnelMat = getFresnelMat();
-// const fresnelMesh = new THREE.Mesh(geometry, fresnelMat);
-// fresnelMesh.scale.setScalar(1.01);
-// earthGroup.add(fresnelMesh);
 
 // SUN
 
