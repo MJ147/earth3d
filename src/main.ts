@@ -1,17 +1,15 @@
 import './style.css';
 import * as THREE from 'three';
-import { SpaceshipControls } from './classes/spaceship-controls.ts';
-import { Starfield } from './classes/starfield.ts';
+import { SpaceshipControls } from './objects/spaceship-controls.ts';
+import { Starfield } from './objects/starfield.ts';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
+import { Earth } from './objects/earth.ts';
 
 const earthRotationStep: number = 0.0001;
 
 const textureLoader = new THREE.TextureLoader();
-const earthDayTexture = textureLoader.load('assets/8k_earth_daymap.jpg');
-const earthNightTexture = textureLoader.load('assets/8k_earth_nightmap.jpg');
-const earthCloudsTexture = textureLoader.load('assets/8k_earth_clouds.jpg');
 const sunTexture = textureLoader.load('assets/8k_sun.jpg');
 
 const scene = new THREE.Scene();
@@ -35,50 +33,22 @@ window.addEventListener('resize', () => {
 	renderer.setSize(w, h);
 });
 
-// EARTH
-const earthGroup = new THREE.Group();
-earthGroup.rotation.y = 0.5;
-earthGroup.rotation.z = (-23.5 * Math.PI) / 180;
-scene.add(earthGroup);
-
-const geometry = new THREE.IcosahedronGeometry(10, 12);
-const material = new THREE.MeshStandardMaterial({ map: earthDayTexture });
-const earthMesh = new THREE.Mesh(geometry, material);
-earthGroup.add(earthMesh);
-
-const cloudMaterial = new THREE.MeshStandardMaterial({
-	map: earthCloudsTexture,
-	transparent: true,
-	opacity: 0.9,
-	blending: THREE.AdditiveBlending,
-});
-const cloudMesh = new THREE.Mesh(geometry, cloudMaterial);
-cloudMesh.scale.setScalar(1.006);
-earthGroup.add(cloudMesh);
-
-const lightMat = new THREE.MeshBasicMaterial({
-	map: earthNightTexture,
-	blending: THREE.AdditiveBlending,
-	transparent: false,
-	opacity: 0.01,
-});
-const lightMesh = new THREE.Mesh(geometry, lightMat);
-lightMesh.scale.setScalar(1.003);
-
-earthGroup.add(lightMesh);
+const earth = new Earth();
+scene.add(earth.earthGroup);
 
 // SUN
 
 // Additive Blending for Glow
 const glowGeometry = new THREE.IcosahedronGeometry(20, 12);
 const glowMaterial = new THREE.MeshStandardMaterial({
-	emissive: 0xffffff,
-	emissiveMap: sunTexture,
+	emissive: 0xffffbf,
+	// emissiveMap: sunTexture,
 	emissiveIntensity: 4,
 });
 const glowMesh = new THREE.Mesh(glowGeometry, glowMaterial);
-glowMesh.position.set(-100, 25, 75);
+glowMesh.position.set(-1000, 250, 750);
 scene.add(glowMesh);
+// camera.lookAt(new THREE.Vector3(-1000, 250, 750));
 
 // Bloom Effect
 const renderScene = new RenderPass(scene, camera);
@@ -105,9 +75,9 @@ const spaceShipControls = new SpaceshipControls(camera, starfield.getStars());
 function animate() {
 	requestAnimationFrame(animate);
 	spaceShipControls.updateCamera();
-	earthMesh.rotation.y += earthRotationStep;
-	lightMesh.rotation.y += earthRotationStep;
-	cloudMesh.rotation.y += earthRotationStep + 0.00002;
+	earth.earth.rotation.y += earthRotationStep;
+	earth.darkSide.rotation.y += earthRotationStep;
+	earth.clouds.rotation.y += earthRotationStep + 0.00002;
 
 	renderer.render(scene, camera);
 	composer.render();
