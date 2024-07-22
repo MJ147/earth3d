@@ -38,7 +38,8 @@ export class Starfield {
 		starGeometry.setAttribute('color', new THREE.Float32BufferAttribute(starColors, 3));
 
 		const stars = new THREE.Points(starGeometry, starMaterial);
-
+		stars.renderOrder = -1;
+		stars.material.depthTest = false;
 		return stars;
 	}
 
