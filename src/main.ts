@@ -9,8 +9,8 @@ import { Earth } from './objects/earth.ts';
 
 const earthRotationStep: number = 0.0001;
 
-const textureLoader = new THREE.TextureLoader();
-const sunTexture = textureLoader.load('assets/8k_sun.jpg');
+// const textureLoader = new THREE.TextureLoader();
+// const sunTexture = textureLoader.load('assets/8k_sun.jpg');
 
 const scene = new THREE.Scene();
 
@@ -41,12 +41,12 @@ scene.add(earth.earthGroup);
 // Additive Blending for Glow
 const glowGeometry = new THREE.IcosahedronGeometry(20, 12);
 const glowMaterial = new THREE.MeshStandardMaterial({
-	emissive: 0xffffbf,
+	emissive: 0xffffdf,
 	// emissiveMap: sunTexture,
 	emissiveIntensity: 4,
 });
 const glowMesh = new THREE.Mesh(glowGeometry, glowMaterial);
-glowMesh.position.set(-1000, 250, 750);
+glowMesh.position.set(-900, 300, 900);
 scene.add(glowMesh);
 // camera.lookAt(new THREE.Vector3(-1000, 250, 750));
 
