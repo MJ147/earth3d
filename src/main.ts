@@ -4,13 +4,8 @@ import { SpaceshipControls } from './objects/spaceship-controls.ts';
 import { Starfield } from './objects/starfield.ts';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 import { Earth } from './objects/earth.ts';
-
-const earthRotationStep: number = 0.0001;
-
-const textureLoader = new THREE.TextureLoader();
-const sunTexture = textureLoader.load('assets/8k_sun.jpg');
+import { Sun } from './objects/sun.ts';
 
 const scene = new THREE.Scene();
 
@@ -36,34 +31,7 @@ window.addEventListener('resize', () => {
 const earth = new Earth();
 scene.add(earth.earthGroup);
 
-// SUN
-
-// Additive Blending for Glow
-const glowGeometry = new THREE.IcosahedronGeometry(20, 12);
-const glowMaterial = new THREE.MeshStandardMaterial({
-	emissive: 0xffffbf,
-	// emissiveMap: sunTexture,
-	emissiveIntensity: 4,
-});
-const glowMesh = new THREE.Mesh(glowGeometry, glowMaterial);
-glowMesh.position.set(-1000, 250, 750);
-scene.add(glowMesh);
-// camera.lookAt(new THREE.Vector3(-1000, 250, 750));
-
-// Bloom Effect
-const renderScene = new RenderPass(scene, camera);
-const bloomPass = new UnrealBloomPass(
-	new THREE.Vector2(window.innerWidth, window.innerHeight),
-	0.4, // strength
-	0.1, // radius
-	0.1, // threshold
-);
-const composer = new EffectComposer(renderer);
-composer.addPass(renderScene);
-composer.addPass(bloomPass);
-
 const starfield = new Starfield();
-
 scene.add(starfield.getStars());
 
 const sunlight = new THREE.DirectionalLight(0xffffff, 1);
@@ -72,12 +40,22 @@ scene.add(sunlight);
 
 const spaceShipControls = new SpaceshipControls(camera, starfield.getStars());
 
+const sun = new Sun();
+scene.add(sun.sunMesh);
+
+const composer = new EffectComposer(renderer);
+const renderScene = new RenderPass(scene, camera);
+composer.addPass(renderScene);
+composer.addPass(sun.glowEffect);
+
+camera.lookAt(new THREE.Vector3(-1000, 250, 750));
+
 function animate() {
 	requestAnimationFrame(animate);
 	spaceShipControls.updateCamera();
-	earth.earth.rotation.y += earthRotationStep;
-	earth.darkSide.rotation.y += earthRotationStep;
-	earth.clouds.rotation.y += earthRotationStep + 0.00002;
+	earth.earth.rotation.y += earth.earthRotationStep;
+	earth.darkSide.rotation.y += earth.earthRotationStep;
+	earth.clouds.rotation.y += earth.earthRotationStep + 0.00002;
 
 	renderer.render(scene, camera);
 	composer.render();
