@@ -7,8 +7,6 @@ import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { Earth } from './objects/earth.ts';
 import { Sun } from './objects/sun.ts';
 
-const earthRotationStep: number = 0.0001;
-
 const scene = new THREE.Scene();
 
 const w = window.innerWidth;
@@ -55,9 +53,9 @@ camera.lookAt(new THREE.Vector3(-1000, 250, 750));
 function animate() {
 	requestAnimationFrame(animate);
 	spaceShipControls.updateCamera();
-	earth.earth.rotation.y += earthRotationStep;
-	earth.darkSide.rotation.y += earthRotationStep;
-	earth.clouds.rotation.y += earthRotationStep + 0.00002;
+	earth.earth.rotation.y += earth.earthRotationStep;
+	earth.darkSide.rotation.y += earth.earthRotationStep;
+	earth.clouds.rotation.y += earth.earthRotationStep + 0.00002;
 
 	renderer.render(scene, camera);
 	composer.render();
