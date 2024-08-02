@@ -24,23 +24,24 @@ export class GameCore {
 		camera.position.z = 50;
 		camera.position.y = 20;
 		camera.rotateOnAxis(new THREE.Vector3(1, 0, 0), -0.36);
+
 		return camera;
 	}
 
 	createScene() {
 		const scene = new THREE.Scene();
-		const earth = new Earth();
-		scene.add(earth.earthGroup);
+		// const earth = new Earth();
+		// scene.add(earth.earthGroup);
 
-		const starfield = new Starfield();
-		scene.add(starfield.getStars());
+		// const starfield = new Starfield();
+		// scene.add(starfield.getStars());
 
-		const sunlight = new THREE.DirectionalLight(0xffffff, 1);
-		sunlight.position.set(-2, 0.5, 1.5);
-		scene.add(sunlight);
+		// const sunlight = new THREE.DirectionalLight(0xffffff, 1);
+		// sunlight.position.set(-2, 0.5, 1.5);
+		// scene.add(sunlight);
 
-		const sun = new Sun();
-		scene.add(sun.sunMesh);
+		// const sun = new Sun();
+		// scene.add(sun.sunMesh);
 
 		return scene;
 	}
@@ -67,7 +68,6 @@ export class GameCore {
 		const composer = new EffectComposer(this.renderer);
 		const renderScene = new RenderPass(this.scene, this.camera);
 		composer.addPass(renderScene);
-		composer.addPass(sun.glowEffect);
 	}
 
 	animate(): void {
