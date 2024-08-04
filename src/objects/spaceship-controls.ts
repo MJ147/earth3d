@@ -53,13 +53,13 @@ export class SpaceshipControls {
 
 		const direction = new THREE.Vector3();
 		this.camera.getWorldDirection(direction);
-		this.handleDirectionMovement(direction, this.keys.KeyR, this.keys.KeyF);
+		this.handleDirectionMovement(direction, this.keys.KeyW, this.keys.KeyS);
 
 		direction.setFromMatrixColumn(this.camera.matrixWorld, 0);
 		this.handleDirectionMovement(direction, this.keys.KeyD, this.keys.KeyA);
 
 		direction.setFromMatrixColumn(this.camera.matrixWorld, 1);
-		this.handleDirectionMovement(direction, this.keys.KeyW, this.keys.KeyS);
+		this.handleDirectionMovement(direction, this.keys.KeyR, this.keys.KeyF);
 
 		this.camera.position.add(this.velocity);
 		this.starfield.position.add(this.velocity);
