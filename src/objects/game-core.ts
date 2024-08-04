@@ -7,18 +7,20 @@ import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 
 export class GameCore {
-	camera: THREE.PerspectiveCamera;
-	scene: THREE.Scene;
-	renderer: THREE.WebGLRenderer;
+	private _camera: THREE.PerspectiveCamera;
+	private _scene: THREE.Scene;
+	private _renderer: THREE.WebGLRenderer;
+	private _composer: EffectComposer;
 
 	constructor() {
-		this.camera = this.createCamera();
-		this.scene = this.createScene();
-		this.renderer = this.createRenderer();
-		this.setWindowResizeListener();
+		this._camera = this._createCamera();
+		this._scene = this._createScene();
+		this._renderer = this._createRenderer();
+		this._composer = this._createComposer();
+		this._setWindowResizeListener();
 	}
 
-	createCamera() {
+	private _createCamera() {
 		const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 10000);
 		camera.rotation.order = 'YXZ';
 		camera.position.z = 50;
@@ -28,7 +30,7 @@ export class GameCore {
 		return camera;
 	}
 
-	createScene() {
+	private _createScene() {
 		const scene = new THREE.Scene();
 		// const earth = new Earth();
 		// scene.add(earth.earthGroup);
@@ -46,32 +48,39 @@ export class GameCore {
 		return scene;
 	}
 
-	createRenderer() {
+	private _createRenderer() {
 		const renderer = new THREE.WebGLRenderer();
 		renderer.setSize(window.innerWidth, window.innerHeight);
 		document.body.appendChild(renderer.domElement);
+
 		return renderer;
 	}
 
-	setWindowResizeListener(): void {
+	private _createComposer(): EffectComposer {
+		const composer = new EffectComposer(this._renderer);
+		const renderScene = new RenderPass(this._scene, this._camera);
+		composer.addPass(renderScene);
+
+		return composer;
+	}
+
+	private _setWindowResizeListener(): void {
 		const w = window.innerWidth;
 		const h = window.innerHeight;
 
 		window.addEventListener('resize', () => {
-			this.camera.aspect = w / h;
-			this.camera.updateProjectionMatrix();
-			this.renderer.setSize(w, h);
+			this._camera.aspect = w / h;
+			this._camera.updateProjectionMatrix();
+			this._renderer.setSize(w, h);
 		});
 	}
 
-	createComposer(): void {
-		const composer = new EffectComposer(this.renderer);
-		const renderScene = new RenderPass(this.scene, this.camera);
-		composer.addPass(renderScene);
+	addToScene(mesh: THREE.Mesh): void {
+		// this.
 	}
 
 	animate(): void {
-		const spaceShipControls = new SpaceshipControls(this.camera, starfield.getStars());
+		const spaceShipControls = new SpaceshipControls(this._camera, starfield.getStars());
 
 		requestAnimationFrame(animate);
 		spaceShipControls.updateCamera();
