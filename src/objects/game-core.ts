@@ -1,9 +1,5 @@
 import * as THREE from 'three';
-import { Earth } from './earth';
-import { Starfield } from './starfield';
-import { Sun } from './sun';
-import { SpaceshipControls } from './spaceship-controls';
-import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+import { EffectComposer, Pass } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 
 export class GameCore {
@@ -32,18 +28,6 @@ export class GameCore {
 
 	private _createScene() {
 		const scene = new THREE.Scene();
-		// const earth = new Earth();
-		// scene.add(earth.earthGroup);
-
-		// const starfield = new Starfield();
-		// scene.add(starfield.getStars());
-
-		// const sunlight = new THREE.DirectionalLight(0xffffff, 1);
-		// sunlight.position.set(-2, 0.5, 1.5);
-		// scene.add(sunlight);
-
-		// const sun = new Sun();
-		// scene.add(sun.sunMesh);
 
 		return scene;
 	}
@@ -75,20 +59,27 @@ export class GameCore {
 		});
 	}
 
-	addToScene(mesh: THREE.Mesh): void {
-		// this.
+	addToScene(...object: THREE.Object3D[]): void {
+		this._scene.add(...object);
 	}
 
-	animate(): void {
-		const spaceShipControls = new SpaceshipControls(this._camera, starfield.getStars());
+	addToComposer(pass: Pass): void {
+		this._composer.addPass(pass);
+	}
 
-		requestAnimationFrame(animate);
-		spaceShipControls.updateCamera();
-		earth.earth.rotation.y += earth.earthRotationStep;
-		earth.darkSide.rotation.y += earth.earthRotationStep;
-		earth.clouds.rotation.y += earth.earthRotationStep + 0.00002;
+	get scene(): THREE.Scene {
+		return this._scene;
+	}
 
-		renderer.render(scene, camera);
-		composer.render();
+	get camera(): THREE.PerspectiveCamera {
+		return this._camera;
+	}
+
+	get renderer(): THREE.WebGLRenderer {
+		return this._renderer;
+	}
+
+	get composer(): EffectComposer {
+		return this._composer;
 	}
 }
