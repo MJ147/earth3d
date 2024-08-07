@@ -26,7 +26,7 @@ gameCore.addToComposer(sun.glowEffect);
 
 const spaceShipControls = new SpaceshipControls(gameCore.camera, starfield.getStars());
 
-gameCore.camera.lookAt(new THREE.Vector3(-1000, 250, 750));
+// gameCore.camera.lookAt(new THREE.Vector3(-1000, 250, 750));
 
 function animate() {
 	requestAnimationFrame(animate);
@@ -36,7 +36,7 @@ function animate() {
 	earth.clouds.rotation.y += earth.earthRotationStep + 0.00002;
 
 	gameCore.renderer.render(gameCore.scene, gameCore.camera);
-	gameCore.composer.render();
+	// gameCore.composer.render();
 }
 
 animate();
