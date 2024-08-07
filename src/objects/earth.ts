@@ -29,50 +29,7 @@ export class Earth {
 	private createEarth(): THREE.Mesh {
 		const sunlight = new THREE.DirectionalLight(0xffffff, 1);
 		sunlight.position.set(-2, 0.5, 1.5);
-		const material = new THREE.ShaderMaterial({
-			uniforms: {
-				texture1: { value: this._earthDayTexture },
-				texture2: { value: this._earthNightTexture },
-				directionalLightDirection: { value: new THREE.Vector3(-1, -1, -1).normalize() },
-				directionalLightColor: { value: new THREE.Color(0xffffff) },
-			},
-			vertexShader: `
-                varying vec2 vUv;
-                varying vec3 vNormal;
-                varying vec3 vLightDirection;
-
-                void main() {
-                    vUv = uv;
-                    vNormal = normalize(normalMatrix * normal);
-                    vLightDirection = normalize(directionalLightDirection);
-                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-                }
-            `,
-			fragmentShader: `
-                uniform sampler2D texture1;
-                uniform sampler2D texture2;
-                uniform vec3 directionalLightDirection;
-                uniform vec3 directionalLightColor;
-                varying vec2 vUv;
-                varying vec3 vNormal;
-                varying vec3 vLightDirection;
-
-                void main() {
-                    vec4 color1 = texture2D(texture1, vUv);
-                    vec4 color2 = texture2D(texture2, vUv);
-                    vec4 color = mix(color2, color1, step(0.5, vUv.x));
-
-                    // // Simple diffuse lighting calculation
-                    // float diffuse = max(dot(vNormal, -vLightDirection), 0.0);
-                    // vec3 lighting = directionalLightColor * diffuse;
-
-                    // Output the final color
-                    gl_FragColor = color;
-                `,
-			// lights: true,
-		});
-
-		// map: this._earthDayTexture,
+		const material = new THREE.MeshStandardMaterial({ map: this._earthDayTexture });
 		const earthMesh = new THREE.Mesh(this._geometry, material);
 
 		return earthMesh;

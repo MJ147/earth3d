@@ -36,7 +36,7 @@ function animate() {
 	earth.clouds.rotation.y += earth.earthRotationStep + 0.00002;
 
 	gameCore.renderer.render(gameCore.scene, gameCore.camera);
-	// gameCore.composer.render();
+	gameCore.composer.render();
 }
 
 animate();
