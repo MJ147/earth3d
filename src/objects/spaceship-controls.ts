@@ -37,6 +37,7 @@ export class SpaceshipControls {
 		KeyE: false,
 		KeyR: false,
 		KeyF: false,
+		Space: false,
 	};
 
 	constructor(camera: THREE.PerspectiveCamera, starfield: THREE.Points) {
@@ -60,6 +61,12 @@ export class SpaceshipControls {
 
 		direction.setFromMatrixColumn(this.camera.matrixWorld, 1);
 		this.handleDirectionMovement(direction, this.keys.KeyR, this.keys.KeyF);
+
+		// reduce with delay velocity on Space key to zero
+		if (this.keys.Space) {
+			this.velocity.multiplyScalar(0.99);
+			console.log(this.velocity);
+		}
 
 		this.camera.position.add(this.velocity);
 		this.starfield.position.add(this.velocity);
