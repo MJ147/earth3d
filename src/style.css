@@ -5,4 +5,75 @@ body {
 
 .cockpit {
     position: absolute;
+    top: -50px;
+    width: 100%;
+}
+
+.start-screen {
+    position: absolute;
+    width: 80vw;
+    height: 80vh;
+    margin: 10vh;
+    background-color: #bebebebe;
+}
+
+.key-button {
+    display: inline-block;
+    padding: 10px 20px;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    background-color: #e5e5e5;
+    border: 2px solid #999;
+    border-radius: 4px;
+    position: relative;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+
+.key-button{
+    position: relative;
+    display: inline-block;
+    width: 80px;
+    height: 80px;
+    padding: 8px 15px;
+    margin: 8px 4px;
+    background: linear-gradient(#282828,#202020);
+    border-radius: 10px;
+    box-shadow: inset -8px 0 8px rgba(0,0,0,0.25),
+    inset 0px -8px 8px rgba(0,0,0,0.15),
+     0 0 0 2px rgba(0,0,0,0.75),
+    10px 20px 25px rgba(0,0,0,0.4);
+    overflow: hidden;
+}
+
+.key-button:last-child{
+    width: 100%;
+}
+
+.key-button::before{
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 4px;
+    bottom: 14px;
+    right: 12px;
+    background: linear-gradient(90deg, #232323,
+    #4a4a4a);
+    box-shadow: -10px -10px 10px rgba(255,255,255,0.25),
+    10px 5px 10px rgba(0,0,0,0.15);
+    border-radius: 10px;
+    border-left: 1px solid #0004;
+    border-top: 1px solid #0009;
+    border-bottom: 1px solid #0004;
+}
+
+.key-button i{
+    position: relative;
+    color: #fff;
+    font-style: normal;
+    text-transform: uppercase;
+    font-size: 1.5em;
 }
