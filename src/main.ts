@@ -26,7 +26,7 @@ gameCore.addToComposer(sun.glowEffect);
 
 const spaceShipControls = new SpaceshipControls(gameCore.camera, starfield.getStars());
 
-gameCore.camera.lookAt(new THREE.Vector3(-1000, 250, 750));
+// gameCore.camera.lookAt(new THREE.Vector3(-1000, 250, 750));
 
 function animate() {
 	requestAnimationFrame(animate);

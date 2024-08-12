@@ -37,6 +37,7 @@ export class SpaceshipControls {
 		KeyE: false,
 		KeyR: false,
 		KeyF: false,
+		Space: false,
 	};
 
 	constructor(camera: THREE.PerspectiveCamera, starfield: THREE.Points) {
@@ -61,8 +62,25 @@ export class SpaceshipControls {
 		direction.setFromMatrixColumn(this.camera.matrixWorld, 1);
 		this.handleDirectionMovement(direction, this.keys.KeyR, this.keys.KeyF);
 
+		this.reduceMovement(this.keys.Space);
+
 		this.camera.position.add(this.velocity);
 		this.starfield.position.add(this.velocity);
+	}
+
+	private reduceMovement(isReduced: boolean): void {
+		if (!isReduced) return;
+
+		const movementReduceFactor = 0.99;
+		const rotationReduceFactor = 0.99;
+
+		this.velocity.multiplyScalar(movementReduceFactor);
+		this.pitch.value *= rotationReduceFactor;
+		this.yaw.value *= rotationReduceFactor;
+
+		if (this.velocity.length() < 0.005) this.velocity.set(0, 0, 0);
+		if (Math.abs(this.pitch.value) < 0.0001) this.pitch.value = 0;
+		if (Math.abs(this.yaw.value) < 0.0001) this.yaw.value = 0;
 	}
 
 	private rotateCamera(increase: boolean, reduce: boolean, rotation: AxisRotation) {

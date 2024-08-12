@@ -11,6 +11,7 @@ export interface SteeringKeys {
 	KeyE: boolean; // roll right
 	KeyR: boolean; // roll forward
 	KeyF: boolean; // roll backward
+	Space: boolean; // roll backward
 }
 
 export type SteeringKey = keyof SteeringKeys;

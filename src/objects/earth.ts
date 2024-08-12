@@ -27,6 +27,8 @@ export class Earth {
 	}
 
 	private createEarth(): THREE.Mesh {
+		const sunlight = new THREE.DirectionalLight(0xffffff, 1);
+		sunlight.position.set(-2, 0.5, 1.5);
 		const material = new THREE.MeshStandardMaterial({ map: this._earthDayTexture });
 		const earthMesh = new THREE.Mesh(this._geometry, material);
 
