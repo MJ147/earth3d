@@ -5,40 +5,30 @@ body {
 
 .cockpit {
     position: absolute;
-    top: -50px;
-    width: 100%;
+    top: -5%;
+    left: -5%;
+    width: 110%;
+    height: 116%;
 }
 
 .start-screen {
     position: absolute;
     width: 80vw;
     height: 80vh;
-    margin: 10vh;
+    margin: 10vh 10vw;
+    border: solid 2px #303030be;
     background-color: #bebebebe;
+    border-radius: 10px;
 }
 
 .key-button {
-    display: inline-block;
-    padding: 10px 20px;
-    font-family: Arial, sans-serif;
-    font-size: 16px;
-    font-weight: bold;
-    color: #333;
-    background-color: #e5e5e5;
-    border: 2px solid #999;
-    border-radius: 4px;
     position: relative;
-    text-align: center;
-    cursor: pointer;
-    transition: background-color 0.2s, transform 0.2s, box-shadow 0.2s;
-}
-
-.key-button{
-    position: relative;
-    display: inline-block;
-    width: 80px;
+    display: flex;
+    align-items: center;
+    min-width: 80px;
+    width: fit-content;
     height: 80px;
-    padding: 8px 15px;
+    padding: 3px 12px 14px 4px;
     margin: 8px 4px;
     background: linear-gradient(#282828,#202020);
     border-radius: 10px;
@@ -47,10 +37,6 @@ body {
      0 0 0 2px rgba(0,0,0,0.75),
     10px 20px 25px rgba(0,0,0,0.4);
     overflow: hidden;
-}
-
-.key-button:last-child{
-    width: 100%;
 }
 
 .key-button::before{
@@ -70,10 +56,24 @@ body {
     border-bottom: 1px solid #0004;
 }
 
-.key-button i{
+.key-button .key-text{
+    flex: 1;
+    padding: 0 20px;
     position: relative;
-    color: #fff;
+    color: #dbdbdb;
     font-style: normal;
     text-transform: uppercase;
-    font-size: 1.5em;
+    font-size: 30px;
+}
+
+.arrow-group {
+    width: fit-content;
+    display: grid;    
+    grid-template-columns: repeat(3, auto);
+    grid-template-rows: repeat(2, auto);
+}
+
+.arrow-group > :first-child {
+    grid-column: 1/4;
+    margin: auto;
 }
