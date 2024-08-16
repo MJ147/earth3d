@@ -7,9 +7,9 @@ export class Earth {
 	private _clouds: THREE.Mesh;
 
 	private _textureLoader = new THREE.TextureLoader();
-	private _earthDayTexture = this._textureLoader.load('assets/8k_earth_daymap.jpg');
-	private _earthNightTexture = this._textureLoader.load('assets/8k_earth_nightmap.jpg');
-	private _earthCloudsTexture = this._textureLoader.load('assets/8k_earth_clouds.jpg');
+	private _earthDayTexture = this._textureLoader.load('assets/planets/8k_earth_daymap.jpg');
+	private _earthNightTexture = this._textureLoader.load('assets/planets/8k_earth_nightmap.jpg');
+	private _earthCloudsTexture = this._textureLoader.load('assets/planets/8k_earth_clouds.jpg');
 
 	private _geometry = new THREE.IcosahedronGeometry(10, 12);
 	private _earthRotationStep: number = 0.0001;
