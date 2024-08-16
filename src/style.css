@@ -11,14 +11,32 @@ body {
     height: 116%;
 }
 
-.start-screen {
+#start-screen {
     position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
     width: 80vw;
     height: 80vh;
     margin: 10vh 10vw;
-    border: solid 2px #303030be;
-    background-color: #bebebebe;
-    border-radius: 10px;
+    background: rgba(255, 255, 255, 0);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(8.9px);
+    -webkit-backdrop-filter: blur(8.9px);
+    border: 1px solid rgba(255, 255, 255, 1);
+
+    .key-screen-footer {
+        color: white;
+    }
+}
+
+.controls-panel {
+    /* flex: 1; */
+    display: flex;
+    justify-content: center;
+    gap: 100px;
 }
 
 .key-button {
@@ -66,8 +84,28 @@ body {
     font-size: 30px;
 }
 
+.key-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 50px;
+
+    label {
+        font-size: 30px;
+        font-weight: bold;
+        color: white;
+        font-family: Arial, Helvetica, sans-serif;
+        font-style: normal;
+    }
+}
+
+.horizontal-key-pair {
+    display: flex;
+}
+
 .arrow-group {
     width: fit-content;
+    height: fit-content;
     display: grid;    
     grid-template-columns: repeat(3, auto);
     grid-template-rows: repeat(2, auto);

@@ -15,7 +15,7 @@ export class Starfield {
 
 	createStars(): THREE.Points {
 		const starGeometry = new THREE.BufferGeometry();
-		const starTexture = new THREE.TextureLoader().load('assets/star.png');
+		const starTexture = new THREE.TextureLoader().load('assets/stars/star.png');
 		const starMaterial = new THREE.PointsMaterial({
 			vertexColors: true,
 			size: 0.5,

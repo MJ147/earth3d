@@ -72,11 +72,12 @@ export class SpaceshipControls {
 		if (!isReduced) return;
 
 		const movementReduceFactor = 0.99;
-		const rotationReduceFactor = 0.99;
+		const rotationReduceFactor = 0.98;
 
 		this.velocity.multiplyScalar(movementReduceFactor);
 		this.pitch.value *= rotationReduceFactor;
 		this.yaw.value *= rotationReduceFactor;
+		this.roll.value *= rotationReduceFactor;
 
 		if (this.velocity.length() < 0.005) this.velocity.set(0, 0, 0);
 		if (Math.abs(this.pitch.value) < 0.0001) this.pitch.value = 0;
@@ -102,6 +103,8 @@ export class SpaceshipControls {
 	}
 
 	private handleKeyDown(event: KeyboardEvent): void {
+		this.toggleControlPanel(event);
+
 		if (!this.keys.hasOwnProperty(event.code)) return;
 
 		this.keys[event.code as SteeringKey] = true;
@@ -111,5 +114,15 @@ export class SpaceshipControls {
 		if (!this.keys.hasOwnProperty(event.code)) return;
 
 		this.keys[event.code as SteeringKey] = false;
+	}
+
+	private toggleControlPanel(event: KeyboardEvent): void {
+		const controlsPanel = document.getElementById('start-screen');
+		if (!controlsPanel) return;
+
+		const isEscape = event.code === 'Escape';
+		const isHidden = controlsPanel.style.visibility === 'hidden';
+
+		controlsPanel.style.visibility = isHidden && isEscape ? 'visible' : 'hidden';
 	}
 }
