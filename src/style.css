@@ -3,12 +3,13 @@ body {
     margin: 0px;
 }
 
-.cockpit {
+#cockpit {
     position: absolute;
     top: -5%;
     left: -5%;
     width: 110%;
     height: 116%;
+    transition: 1s;
 }
 
 #start-screen {

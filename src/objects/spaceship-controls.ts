@@ -97,7 +97,16 @@ export class SpaceshipControls {
 	}
 
 	private addDirectionVelocity(direction: THREE.Vector3, scalar: number, keyCondition: boolean): void {
-		if (!keyCondition) return;
+		const cockpit = document.getElementById('cockpit');
+		if (!cockpit) return;
+		if (!keyCondition) {
+			cockpit.style.transform = ``;
+			return;
+		}
+
+		console.log(cockpit);
+
+		cockpit.style.transform = `translate(${10}px, ${10}px)`;
 
 		this.velocity.add(direction.clone().multiplyScalar(scalar));
 	}
