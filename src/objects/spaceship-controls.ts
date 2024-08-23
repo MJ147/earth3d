@@ -66,6 +66,8 @@ export class SpaceshipControls {
 
 		this.camera.position.add(this.velocity);
 		this.starfield.position.add(this.velocity);
+
+		this.animateCockpit(this.keys.KeyA, this.keys.KeyD, this.keys.KeyR, this.keys.KeyF, this.keys.KeyW, this.keys.KeyS);
 	}
 
 	private reduceMovement(isReduced: boolean): void {
@@ -97,18 +99,33 @@ export class SpaceshipControls {
 	}
 
 	private addDirectionVelocity(direction: THREE.Vector3, scalar: number, keyCondition: boolean): void {
-		const cockpit = document.getElementById('cockpit');
-		if (!cockpit) return;
-		if (!keyCondition) {
-			cockpit.style.transform = ``;
-			return;
-		}
-
-		console.log(cockpit);
-
-		cockpit.style.transform = `translate(${10}px, ${10}px)`;
+		if (!keyCondition) return;
 
 		this.velocity.add(direction.clone().multiplyScalar(scalar));
+	}
+
+	private animateCockpit(
+		moveLeft: boolean,
+		moveRight: boolean,
+		moveUp: boolean,
+		moveDown: boolean,
+		moveForward: boolean,
+		moveBack: boolean,
+	): void {
+		const cockpit = document.getElementById('cockpit');
+		if (!cockpit) return;
+
+		let movementX = moveLeft ? -10 : 0;
+		movementX += moveRight ? 10 : 0;
+
+		let movementY = moveUp ? -10 : 0;
+		movementY += moveDown ? 10 : 0;
+
+		let movementZ = 1;
+		movementZ -= moveForward ? 0.04 : 0;
+		movementZ += moveBack ? 0.04 : 0;
+
+		cockpit.style.transform = `translate(${movementX}px, ${movementY}px) scale(${movementZ})`;
 	}
 
 	private handleKeyDown(event: KeyboardEvent): void {
