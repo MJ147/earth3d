@@ -9,7 +9,7 @@ body {
     left: -5%;
     width: 110%;
     height: 116%;
-    transition: 1s ease-out;
+    transition: 1s ease-in-out;
 }
 
 #start-screen {
