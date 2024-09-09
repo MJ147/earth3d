@@ -48,24 +48,36 @@ export class SpaceshipControls {
 	}
 
 	updateCamera(): void {
-		this.rotateCamera(this.keys.ArrowUp, this.keys.ArrowDown, this.pitch);
-		this.rotateCamera(this.keys.ArrowLeft, this.keys.ArrowRight, this.yaw);
-		this.rotateCamera(this.keys.KeyQ, this.keys.KeyE, this.roll);
+		const key = this.keys;
+		this.rotateCamera(key.ArrowUp, key.ArrowDown, this.pitch);
+		this.rotateCamera(key.ArrowLeft, key.ArrowRight, this.yaw);
+		this.rotateCamera(key.KeyQ, key.KeyE, this.roll);
 
 		const direction = new THREE.Vector3();
 		this.camera.getWorldDirection(direction);
-		this.handleDirectionMovement(direction, this.keys.KeyW, this.keys.KeyS);
+		this.handleDirectionMovement(direction, key.KeyW, key.KeyS);
 
 		direction.setFromMatrixColumn(this.camera.matrixWorld, 0);
-		this.handleDirectionMovement(direction, this.keys.KeyD, this.keys.KeyA);
+		this.handleDirectionMovement(direction, key.KeyD, key.KeyA);
 
 		direction.setFromMatrixColumn(this.camera.matrixWorld, 1);
-		this.handleDirectionMovement(direction, this.keys.KeyR, this.keys.KeyF);
+		this.handleDirectionMovement(direction, key.KeyR, key.KeyF);
 
-		this.reduceMovement(this.keys.Space);
+		this.reduceMovement(key.Space);
 
 		this.camera.position.add(this.velocity);
 		this.starfield.position.add(this.velocity);
+
+		this.animateCockpitMovement(
+			key.KeyA || key.ArrowLeft,
+			key.KeyD || key.ArrowRight,
+			key.KeyR || key.ArrowUp,
+			key.KeyF || key.ArrowDown,
+			key.KeyW,
+			key.KeyS,
+			key.KeyQ,
+			key.KeyE,
+		);
 	}
 
 	private reduceMovement(isReduced: boolean): void {
@@ -100,6 +112,35 @@ export class SpaceshipControls {
 		if (!keyCondition) return;
 
 		this.velocity.add(direction.clone().multiplyScalar(scalar));
+	}
+
+	private animateCockpitMovement(
+		moveLeft: boolean,
+		moveRight: boolean,
+		moveUp: boolean,
+		moveDown: boolean,
+		moveForward: boolean,
+		moveBack: boolean,
+		rollLeft: boolean,
+		rollRight: boolean,
+	): void {
+		const cockpit = document.getElementById('cockpit');
+		if (!cockpit) return;
+
+		let movementX = moveLeft ? -16 : 0;
+		movementX += moveRight ? 16 : 0;
+
+		let movementY = moveUp ? -16 : 0;
+		movementY += moveDown ? 16 : 0;
+
+		let movementZ = 1;
+		movementZ -= moveForward ? 0.02 : 0;
+		movementZ += moveBack ? 0.02 : 0;
+
+		let rotationZ = rollLeft ? -2 : 0;
+		rotationZ += rollRight ? 2 : 0;
+
+		cockpit.style.transform = `translate(${movementX}px, ${movementY}px) scale(${movementZ}) rotateZ(${rotationZ}deg)`;
 	}
 
 	private handleKeyDown(event: KeyboardEvent): void {
